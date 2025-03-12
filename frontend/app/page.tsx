@@ -49,20 +49,17 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
 
   // Define API base URL for reuse
-  const API_BASE_URL =
-    process.env.NODE_ENV === "development"
-      ? config.apiUrlLocal
-      : config.apiUrlRemote;
+  const API_BASE_URL =config.apiUrl
 
   // Fetch products from the API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        console.log(API_BASE_URL);
         const response = await axios.get<Product[]>(`${API_BASE_URL}/products`);
 
         setProducts(response.data);
-        console.log(response.data);
         setFilteredProducts(response.data);
 
         setLoading(false);
