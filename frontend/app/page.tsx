@@ -56,7 +56,6 @@ export default function Home() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        console.log(API_BASE_URL);
         const response = await axios.get<Product[]>(`${API_BASE_URL}/products`);
 
         setProducts(response.data);

@@ -358,7 +358,7 @@ export default function ShoppingCart({
                   </div>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 text-black">
                   <p className="font-medium">Order Summary</p>
                   <div className="flex justify-between py-2 text-sm">
                     <span>Subtotal</span>
@@ -366,7 +366,7 @@ export default function ShoppingCart({
                   </div>
                   <div className="flex justify-between py-2 text-sm">
                     <span>Shipping</span>
-                    <span>$4.99</span>
+                    <span>ETB 200.99</span>
                   </div>
                   <div className="flex justify-between py-2 text-sm">
                     <span>Tax</span>
