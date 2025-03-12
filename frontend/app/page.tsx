@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import ProductCard from './components/ProductCard';
-import ShoppingCart from './components/ShoppingCart';
-import ProductDetail from './components/ProductDetail';
-import SearchBar from './components/SearchBar';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import { config } from './config/config';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import ProductCard from "./components/ProductCard";
+import ShoppingCart from "./components/ShoppingCart";
+import ProductDetail from "./components/ProductDetail";
+import SearchBar from "./components/SearchBar";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { config } from "./config/config";
 interface Product {
   _id: string;
   name: string;
@@ -49,7 +49,10 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
 
   // Define API base URL for reuse
-  const API_BASE_URL = config.apiUrl;
+  const API_BASE_URL =
+    process.env.NODE_ENV === "development"
+      ? config.apiUrlLocal
+      : config.apiUrlRemote;
 
   // Fetch products from the API
   useEffect(() => {
@@ -57,18 +60,21 @@ export default function Home() {
       try {
         setLoading(true);
         const response = await axios.get<Product[]>(`${API_BASE_URL}/products`);
-        
+
         setProducts(response.data);
         console.log(response.data);
         setFilteredProducts(response.data);
-        
+
         setLoading(false);
       } catch (err) {
         const apiError = err as ApiError;
-        const errorMessage = apiError.response?.data?.message || apiError.message || 'An unknown error occurred';
+        const errorMessage =
+          apiError.response?.data?.message ||
+          apiError.message ||
+          "An unknown error occurred";
         setError(errorMessage);
         setLoading(false);
-        console.error('Failed to fetch products:', err);
+        console.error("Failed to fetch products:", err);
       }
     };
 
@@ -79,12 +85,16 @@ export default function Home() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get<string[]>(`${API_BASE_URL}/products/categories`);
+        const response = await axios.get<string[]>(
+          `${API_BASE_URL}/products/categories`
+        );
         setCategories(response.data);
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
+        console.error("Failed to fetch categories:", err);
         // If categories fetch fails, extract from products as fallback
-        const uniqueCategories = [...new Set(products.map(product => product.category))] as string[];
+        const uniqueCategories = [
+          ...new Set(products.map((product) => product.category)),
+        ] as string[];
         setCategories(uniqueCategories);
       }
     };
@@ -94,71 +104,75 @@ export default function Home() {
 
   // Initialize cart items from local storage after component mounts
   useEffect(() => {
-    const savedCart = localStorage.getItem('cartItems');
+    const savedCart = localStorage.getItem("cartItems");
     if (savedCart) {
       try {
         setCartItems(JSON.parse(savedCart));
       } catch (e) {
-        console.error('Failed to parse cart items from localStorage:', e);
-        localStorage.removeItem('cartItems');
+        console.error("Failed to parse cart items from localStorage:", e);
+        localStorage.removeItem("cartItems");
       }
     }
   }, []);
 
   // Save cart items to local storage whenever they change
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
   const handleSearch = (query: string, category: string) => {
-    const filtered = products.filter(product => {
-      const matchesQuery = query === '' || 
+    const filtered = products.filter((product) => {
+      const matchesQuery =
+        query === "" ||
         product.name.toLowerCase().includes(query.toLowerCase()) ||
         product.description.toLowerCase().includes(query.toLowerCase());
-      
-      const matchesCategory = category === '' || product.category === category;
-      
+
+      const matchesCategory = category === "" || product.category === category;
+
       return matchesQuery && matchesCategory;
     });
-    
+
     setFilteredProducts(filtered);
   };
 
   const addToCart = (productId: string) => {
-    const product = products.find(p => p._id === productId);
+    const product = products.find((p) => p._id === productId);
     if (!product) return;
 
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item._id === productId);
-      
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item._id === productId);
+
       if (existingItem) {
-        return prevItems.map(item => 
-          item._id === productId 
-            ? { ...item, quantity: item.quantity + 1 } 
+        return prevItems.map((item) =>
+          item._id === productId
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        return [...prevItems, {
-          _id: product._id,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          quantity: 1
-        }];
+        return [
+          ...prevItems,
+          {
+            _id: product._id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1,
+          },
+        ];
       }
     });
   };
 
   const removeFromCart = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item._id !== productId));
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item._id !== productId)
+    );
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    setCartItems(prevItems => 
-      prevItems.map(item => 
-        item._id === productId 
-          ? { ...item, quantity } 
-          : item
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item._id === productId ? { ...item, quantity } : item
       )
     );
   };
@@ -168,7 +182,7 @@ export default function Home() {
   };
 
   const openProductDetail = (productId: string) => {
-    const product = products.find(p => p._id === productId);
+    const product = products.find((p) => p._id === productId);
     if (product) {
       setSelectedProduct(product);
       setIsDetailOpen(true);
@@ -182,7 +196,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <Header cartItemsCount={cartItems.reduce((total, item) => total + item.quantity, 0)} />
+      <Header
+        cartItemsCount={cartItems.reduce(
+          (total, item) => total + item.quantity,
+          0
+        )}
+      />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
@@ -199,8 +218,10 @@ export default function Home() {
         {/* Error State */}
         {error && (
           <div className="text-center py-10">
-            <p className="text-red-500 text-lg">Error loading products: {error}</p>
-            <button 
+            <p className="text-red-500 text-lg">
+              Error loading products: {error}
+            </p>
+            <button
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
               onClick={() => window.location.reload()}
             >
@@ -229,7 +250,9 @@ export default function Home() {
               ))
             ) : (
               <div className="col-span-full py-10 text-center">
-                <p className="text-gray-500 text-lg">No products found. Try adjusting your filters.</p>
+                <p className="text-gray-500 text-lg">
+                  No products found. Try adjusting your filters.
+                </p>
               </div>
             )}
           </div>
