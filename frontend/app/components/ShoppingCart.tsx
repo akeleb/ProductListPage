@@ -291,7 +291,7 @@ export default function ShoppingCart({
                     name="cardName"
                     value={paymentDetails.cardName}
                     onChange={handlePaymentChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                    className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 text-black"
                     required
                   />
                 </div>
@@ -310,7 +310,7 @@ export default function ShoppingCart({
                     value={paymentDetails.cardNumber}
                     onChange={handlePaymentChange}
                     placeholder="XXXX XXXX XXXX XXXX"
-                    className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                    className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 text-black"
                     required
                   />
                 </div>
@@ -330,7 +330,7 @@ export default function ShoppingCart({
                       value={paymentDetails.expiry}
                       onChange={handlePaymentChange}
                       placeholder="MM/YY"
-                      className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                      className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 text-black"
                       required
                     />
                   </div>
@@ -349,7 +349,7 @@ export default function ShoppingCart({
                       value={paymentDetails.cvv}
                       onChange={handlePaymentChange}
                       placeholder="XXX"
-                      className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                      className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 text-black"
                       required
                     />
                   </div>
