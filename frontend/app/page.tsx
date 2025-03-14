@@ -38,7 +38,6 @@ interface ApiError {
 }
 
 export default function Home() {
-  // Add products state instead of directly using the imported array
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -103,7 +102,12 @@ export default function Home() {
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) {
       try {
-        setCartItems(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart)) {
+          setCartItems(parsedCart);
+        } else {
+          throw new Error("Invalid cart data format");
+        }
       } catch (e) {
         console.error("Failed to parse cart items from localStorage:", e);
         localStorage.removeItem("cartItems");
@@ -113,7 +117,11 @@ export default function Home() {
 
   // Save cart items to local storage whenever they change
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    if (cartItems.length > 0) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    } else {
+      localStorage.removeItem("cartItems");
+    }
   }, [cartItems]);
 
   const handleSearch = (query: string, category: string) => {
@@ -258,12 +266,13 @@ export default function Home() {
       {/* Footer */}
       <Footer />
 
-      {/* Shopping Cart Sidebar */}
+      {/* Shopping Cart */}
       <ShoppingCart
         cartItems={cartItems}
         removeFromCart={removeFromCart}
         updateQuantity={updateQuantity}
         clearCart={clearCart}
+        setCartItems={setCartItems}
       />
 
       {/* Product Detail Modal */}

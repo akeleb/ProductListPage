@@ -16,6 +16,7 @@ interface ShoppingCartProps {
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  setCartItems: (items: CartItem[]) => void;
 }
 
 export default function ShoppingCart({
@@ -32,10 +33,6 @@ export default function ShoppingCart({
     expiry: "",
     cvv: "",
   });
-
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
 
   // Add event listener to open cart from header
   useEffect(() => {
