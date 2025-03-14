@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import Modal from "./Modal";
 import Link from "next/link";
+import { ApiError } from "../types/error";
 
 interface LoginProps {
   isOpen: boolean;
@@ -19,17 +20,31 @@ export default function Login({
 }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, error } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
     try {
       await login(email, password);
       onClose();
       router.push("/");
     } catch (err) {
-      console.log(err);
+      const error = err as ApiError;
+      if (error.response?.status === 401) {
+        setError(error.response.data.message);
+      } else if (error.response?.status === 500) {
+        setError("Server error. Please try again later.");
+      } else {
+        setError(error.message || "An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -54,6 +69,7 @@ export default function Login({
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={isLoading}
             />
           </div>
           <div>
@@ -73,12 +89,24 @@ export default function Login({
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
             />
           </div>
         </div>
 
         {error && (
-          <div className="text-red-500 text-sm text-center">{error}</div>
+          <div className="rounded-md bg-red-50 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
         )}
 
         <div className="flex items-center justify-between">
@@ -95,9 +123,12 @@ export default function Login({
         <div>
           <button
             type="submit"
-            className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            disabled={isLoading}
+            className={`flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              isLoading ? 'opacity-75 cursor-not-allowed' : ''
+            }`}
           >
-            Sign in
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </button>
         </div>
 

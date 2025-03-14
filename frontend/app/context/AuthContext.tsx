@@ -3,18 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { config } from '../config/config';
-
-interface User {
-  _id: string;
-  email: string;
-  username?: string;
-  name?: string;
-}
-
-interface AuthResponse {
-  token: string;
-  user: User;
-}
+import { User, AuthResponse, ApiError } from '../types/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -68,7 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
-      console.log(response.data)
       const { token, user } = response.data;
       setToken(token);
       setUser(user);
@@ -76,9 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(user));
       return response.data;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed';
+      const errorMessage = (err as ApiError)?.response?.data?.message || (err as Error)?.message || 'Login failed';
       setError(errorMessage);
       throw err;
     }
@@ -98,9 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(user));
       return response.data;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed';
+      const errorMessage = (err as ApiError)?.response?.data?.message || (err as Error)?.message || 'Registration failed';
       setError(errorMessage);
       throw err;
     }
