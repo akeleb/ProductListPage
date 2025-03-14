@@ -160,7 +160,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Home
             </Link>
             <Link
-              href="/products"
+              href="/"
               className={`text-base font-medium ${
                 pathname === "/products"
                   ? "text-blue-600 border-b-2 border-blue-600"
@@ -170,7 +170,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Products
             </Link>
             <Link
-              href="/categories"
+              href="#"
               className={`text-base font-medium ${
                 pathname === "/categories"
                   ? "text-blue-600 border-b-2 border-blue-600"
@@ -180,7 +180,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Categories
             </Link>
             <Link
-              href="/deals"
+              href="#"
               className={`text-base font-medium ${
                 pathname === "/deals"
                   ? "text-blue-600 border-b-2 border-blue-600"
@@ -190,7 +190,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Deals
             </Link>
             <Link
-              href="/about"
+              href="#"
               className={`text-base font-medium ${
                 pathname === "/about"
                   ? "text-blue-600 border-b-2 border-blue-600"
@@ -328,7 +328,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Home
             </Link>
             <Link
-              href="/products"
+              href="#"
               className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/products"
                   ? "text-blue-600 bg-blue-50"
@@ -338,7 +338,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Products
             </Link>
             <Link
-              href="/categories"
+              href="#"
               className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/categories"
                   ? "text-blue-600 bg-blue-50"
@@ -348,7 +348,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Categories
             </Link>
             <Link
-              href="/deals"
+              href="#"
               className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/deals"
                   ? "text-blue-600 bg-blue-50"
@@ -358,7 +358,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               Deals
             </Link>
             <Link
-              href="/about"
+              href="#"
               className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/about"
                   ? "text-blue-600 bg-blue-50"
