@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import connectDB from './config/db.js';
 import productRoutes from './routes/products.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
+import userRoutes from './routes/users.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Routes
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

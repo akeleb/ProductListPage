@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 interface HeaderProps {
   cartItemsCount: number;
@@ -14,6 +15,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -208,52 +210,37 @@ export default function Header({ cartItemsCount }: HeaderProps) {
               </svg>
             </button>
 
-            {/* Account */}
-            <Link href="/account" className="text-gray-500 hover:text-gray-900">
-              <span className="sr-only">Account</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </Link>
-
-            {/* Wishlist */}
-            <Link
-              href="/wishlist"
-              className="text-gray-500 hover:text-gray-900 relative"
-            >
-              <span className="sr-only">Wishlist</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                />
-              </svg>
-            </Link>
+            {/* Authentication Links */}
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-gray-700">{user.email}</span>
+                <button
+                  onClick={logout}
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="text-gray-500 hover:text-gray-900"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
 
             {/* Cart Button */}
             <button
-              onClick={() =>
-                document.dispatchEvent(new CustomEvent("open-cart"))
-              }
+              onClick={() => document.dispatchEvent(new CustomEvent("open-cart"))}
               className="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               <svg
@@ -281,75 +268,90 @@ export default function Header({ cartItemsCount }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile menu, show/hide based on mobile menu state */}
-      <div className={`${isMobileMenuOpen ? "block" : "hidden"} md:hidden`}>
-        <div className="pt-2 pb-4 px-4 space-y-1 sm:px-6 divide-y divide-gray-200">
-          <div className="py-2">
+      {/* Mobile menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden">
+          <div className="pt-2 pb-3 space-y-1">
             <Link
               href="/"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/"
                   ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               Home
             </Link>
             <Link
               href="/products"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/products"
                   ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               Products
             </Link>
             <Link
               href="/categories"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/categories"
                   ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               Categories
             </Link>
             <Link
               href="/deals"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/deals"
                   ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               Deals
             </Link>
             <Link
               href="/about"
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${
                 pathname === "/about"
                   ? "text-blue-600 bg-blue-50"
-                  : "text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
               About
             </Link>
-          </div>
+            {user ? (
+              <>
+                <span className="block pl-3 pr-4 py-2 text-base font-medium text-gray-700">
+                  {user.email}
+                </span>
+                <button
+                  onClick={logout}
+                  className="block w-full text-left pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="block pl-3 pr-4 py-2 text-base font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Register
+                </Link>
+              </>
+            )}
 
-          <div className="py-2">
-            <Link
-              href="/account"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Account
-            </Link>
-            <Link
-              href="/wishlist"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Wishlist
-            </Link>
+            {/* Mobile menu cart button */}
             <button
               onClick={() => {
                 document.dispatchEvent(new CustomEvent("open-cart"));
@@ -366,7 +368,7 @@ export default function Header({ cartItemsCount }: HeaderProps) {
             </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Search overlay */}
       {isSearchOpen && (
