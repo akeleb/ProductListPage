@@ -4,11 +4,23 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import axios from 'axios';
 import { config } from '../config/config';
 
+interface User {
+  _id: string;
+  email: string;
+  username?: string;
+  name?: string;
+}
+
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthResponse>;
+  register: (email: string, password: string) => Promise<AuthResponse>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
@@ -17,57 +29,92 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for token in localStorage on mount
+    // Check for token and user data in localStorage on mount
     const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      // TODO: Fetch user data if needed
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedToken && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        // Validate that the parsed user has required fields
+        if (parsedUser._id && parsedUser.email) {
+          setToken(storedToken);
+          setUser(parsedUser);
+        } else {
+          throw new Error('Invalid user data');
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        // If JSON parsing fails or data is invalid, clear invalid data from localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setToken(null);
+        setUser(null);
+      }
     }
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
       setError(null);
-      const response = await axios.post(`${config.apiUrl}/users/login`, {
+      const response = await axios.post<AuthResponse>(`${config.apiUrl}/users/login`, {
         email,
         password,
       });
-      const { token } = response.data;
+      console.log(response.data)
+      const { token, user } = response.data;
       setToken(token);
+      setUser(user);
       localStorage.setItem('token', token);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+      localStorage.setItem('user', JSON.stringify(user));
+      return response.data;
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Login failed';
+      setError(errorMessage);
       throw err;
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string): Promise<AuthResponse> => {
     try {
       setError(null);
-      const response = await axios.post(`${config.apiUrl}/users/register`, {
+      const response = await axios.post<AuthResponse>(`${config.apiUrl}/users/register`, {
         email,
         password,
       });
-      const { token } = response.data;
+      const { token, user } = response.data;
       setToken(token);
+      setUser(user);
       localStorage.setItem('token', token);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      localStorage.setItem('user', JSON.stringify(user));
+      return response.data;
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Registration failed';
+      setError(errorMessage);
       throw err;
     }
   };
 
   const logout = () => {
+    // Clear both token and user data from state
     setToken(null);
     setUser(null);
+    // Clear both token and user data from localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Redirect to home page
+    window.location.href = '/';
   };
 
   return (
