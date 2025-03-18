@@ -33,6 +33,7 @@ export default function ShoppingCart({
     expiry: "",
     cvv: "",
   });
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
   // Add event listener to open cart from header
   useEffect(() => {
@@ -67,6 +68,7 @@ export default function ShoppingCart({
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setOrderNumber(Math.floor(Math.random() * 1000000).toString().padStart(6, "0"));
     setCheckoutStep("success");
   };
 
@@ -415,10 +417,7 @@ export default function ShoppingCart({
                   Thank you for shopping with us!
                 </p>
                 <p className="text-sm text-gray-500 mb-2">
-                  Order #:{" "}
-                  {Math.floor(Math.random() * 1000000)
-                    .toString()
-                    .padStart(6, "0")}
+                  Order #: {orderNumber}
                 </p>
                 <p className="text-sm text-gray-500 mb-8">
                   A confirmation email has been sent to your inbox.

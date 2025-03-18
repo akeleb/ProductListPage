@@ -10,7 +10,7 @@ Built with Express.js and MongoDB.
 
 1. Install dependencies:
    ```bash
-   npm run install-deps
+   npm run install
    ```
 
 2. Create a `.env` file in the backend directory with:
